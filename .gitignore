@@ -101,7 +101,6 @@ htmlcov/
 # ==========================================
 
 datasets/
-data/
 BraTS2020/
 BraTS2021/
 BraTS*/
