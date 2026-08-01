@@ -5,12 +5,18 @@ brain-tumor-segmentation/
 ├── datasets/
 │
 ├── configs/
+│    └── config.py
 │
 ├── models/
 │   ├── effnet_unet.py
 │   ├── segformer.py
 │   └── losses.py
 │
+├── data/
+│   ├── dataset.py
+│   ├── split.py
+│   └── transform.py
+│ 
 ├── utils/
 │   ├── dataset.py
 │   ├── augmentations.py
@@ -152,4 +158,32 @@ Feature Fusion
       │
 Upsample → 224×224
       │
+Sigmoid
+
+
+4 MRI channels
+       │
+1×1 Conv (4→3)
+       │
+MiT-B0 Encoder (ImageNet)
+       │
+──────── Feature Maps ────────
+C1 : 56×56 × 32
+C2 : 28×28 × 64
+C3 : 14×14 ×160
+C4 :  7×7 ×256
+──────────────────────────────
+       │
+MLP on every feature map
+       │
+Upsample all → 56×56
+       │
+Concatenate
+       │
+1×1 Conv (Fusion)
+       │
+Upsample → 224×224
+       │
+1×1 Conv
+       │
 Sigmoid

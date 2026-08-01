@@ -113,11 +113,12 @@ class BraTSDataset(Dataset):
 
         # Binary segmentation
         mask = (mask > 0).astype(np.float32)
+        
+        image = torch.from_numpy(image).permute(2, 0, 1).float()
 
         if self.transform:
             image = self.transform(image)
 
-        image = torch.from_numpy(image).permute(2, 0, 1).float()
         mask = torch.from_numpy(mask).unsqueeze(0).float()
 
         return image, mask
