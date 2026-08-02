@@ -69,19 +69,18 @@ def train_one_epoch(
 
             for name, metric in metrics.items():
 
-                running_metrics[name] += metric(
+                value = metric(
 
                     outputs,
 
                     masks,
 
-                ).item()
+                )
 
-        progress.set_postfix(
+                if isinstance(value, torch.Tensor):
+                    value = value.item()
 
-            loss=f"{loss.item():.4f}"
-
-        )
+                running_metrics[name] += value
 
     epoch_loss = running_loss / len(dataloader)
 
@@ -144,13 +143,18 @@ def validate(
 
             for name, metric in metrics.items():
 
-                running_metrics[name] += metric(
+                value = metric(
 
                     outputs,
 
                     masks,
 
-                ).item()
+                )
+
+                if isinstance(value, torch.Tensor):
+                    value = value.item()
+
+                running_metrics[name] += value
 
     epoch_loss = running_loss / len(dataloader)
 

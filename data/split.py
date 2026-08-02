@@ -2,7 +2,7 @@ from pathlib import Path
 from sklearn.model_selection import train_test_split
 
 from configs.config import (
-    DATASET_PATH,
+    DATASET_DIR,
     SEED,
     TRAIN_SPLIT,
     VAL_SPLIT,
@@ -15,7 +15,7 @@ def get_patient_folders():
     """
 
     patients = sorted(
-        DATASET_PATH.glob("BraTS20_Training_*")
+        DATASET_DIR.glob("BraTS20_Training_*")
     )
 
     valid_patients = []

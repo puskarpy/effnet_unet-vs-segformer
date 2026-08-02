@@ -40,13 +40,10 @@ class BraTSDataset(Dataset):
 
                 # Skip most empty slices
                 if np.sum(m) == 0:
-
                     if random.random() > empty_slice_prob:
                         continue
 
-                self.samples.append(
-                    (patient, slice_idx)
-                )
+                self.samples.append((patient, slice_idx))
 
         print(f"Total slices: {len(self.samples)}")
 
@@ -89,6 +86,7 @@ class BraTSDataset(Dataset):
             patient / f"{patient.name}_seg.nii"
         ).get_fdata()[:, :, slice_idx]
 
+        # Stack 4 MRI modalities
         image = np.stack(
             [
                 self.normalize(flair),
@@ -113,12 +111,21 @@ class BraTSDataset(Dataset):
 
         # Binary segmentation
         mask = (mask > 0).astype(np.float32)
-        
+
+        # Convert to tensors
         image = torch.from_numpy(image).permute(2, 0, 1).float()
-
-        if self.transform:
-            image = self.transform(image)
-
         mask = torch.from_numpy(mask).unsqueeze(0).float()
+
+        # Apply synchronized transforms
+        if self.transform:
+            sample = {
+                "image": image,
+                "mask": mask,
+            }
+
+            sample = self.transform(sample)
+
+            image = sample["image"]
+            mask = sample["mask"]
 
         return image, mask

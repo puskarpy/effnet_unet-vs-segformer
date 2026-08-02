@@ -9,12 +9,12 @@ from configs.config import (
     PIN_MEMORY
 )
 
-from data.split import split_dataset
+from data.split import split_patients
 from data.dataset import BraTSDataset
-from data.transform import get_train_transforms, get_val_transforms
+from data.transform import train_transform, val_transform
 
 from models.effnet_unet import build_effnet_unet
-from models.losses import bce_dice_loss
+from models.losses import BCEDiceLoss
 
 from utils.metrics import (
     dice_score,
@@ -32,23 +32,20 @@ def main():
     # Device
     # ----------------------------------------
 
-    device = torch.device(
+    if torch.backends.mps.is_available():
+        DEVICE = torch.device("mps")
+    elif torch.cuda.is_available():
+        DEVICE = torch.device("cuda")
+    else:
+        DEVICE = torch.device("cpu")
 
-        "cuda"
-
-        if torch.cuda.is_available()
-
-        else "cpu"
-
-    )
-
-    print(f"Using device: {device}")
+    print(f"Using device: {DEVICE}")
 
     # ----------------------------------------
     # Dataset Split
     # ----------------------------------------
 
-    train_patients, val_patients, test_patients = split_dataset()
+    train_patients, val_patients, test_patients = split_patients()
 
     print(f"Train Patients : {len(train_patients)}")
 
@@ -64,7 +61,7 @@ def main():
 
         train_patients,
 
-        transform=get_train_transforms(),
+        transform=train_transform,
 
     )
 
@@ -72,7 +69,7 @@ def main():
 
         val_patients,
 
-        transform=get_val_transforms(),
+        transform=val_transform,
 
     )
 
@@ -156,11 +153,11 @@ def main():
 
         optimizer=optimizer,
 
-        criterion=bce_dice_loss,
+        criterion=BCEDiceLoss(),
 
         metrics=metrics,
 
-        device=device,
+        device=DEVICE,
 
         epochs=EPOCHS,
 

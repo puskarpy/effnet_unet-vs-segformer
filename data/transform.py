@@ -1,49 +1,49 @@
+import numpy as np
+
 from monai.transforms import (
     Compose,
-    RandFlip,
-    RandRotate,
-    RandGaussianNoise,
-    RandAdjustContrast,
-    RandShiftIntensity,
+    RandFlipd,
+    RandRotated,
+    RandGaussianNoised,
+    RandAdjustContrastd,
+    RandShiftIntensityd,
 )
 
 
-def get_train_transforms():
+train_transform = Compose([
+    RandFlipd(
+        keys=["image", "mask"],
+        prob=0.5,
+        spatial_axis=0,
+    ),
+    RandFlipd(
+        keys=["image", "mask"],
+        prob=0.5,
+        spatial_axis=1,
+    ),
+    RandRotated(
+        keys=["image", "mask"],
+        range_x=np.pi / 12,   # ±15°
+        prob=0.5,
+        mode=("bilinear", "nearest"),
+        padding_mode="zeros",
+    ),
+    RandGaussianNoised(
+        keys=["image"],
+        prob=0.2,
+        mean=0.0,
+        std=0.05,
+    ),
+    RandAdjustContrastd(
+        keys=["image"],
+        prob=0.3,
+        gamma=(0.7, 1.5),
+    ),
+    RandShiftIntensityd(
+        keys=["image"],
+        offsets=0.1,
+        prob=0.3,
+    ),
+])
 
-    return Compose([
-        RandFlip(
-            prob=0.5,
-            spatial_axis=0,
-        ),
-
-        RandFlip(
-            prob=0.5,
-            spatial_axis=1,
-        ),
-
-        RandRotate(
-            range_x=0.26,
-            prob=0.5,
-            keep_size=True,
-        ),
-
-        RandGaussianNoise(
-            prob=0.2,
-            mean=0.0,
-            std=0.05,
-        ),
-
-        RandAdjustContrast(
-            prob=0.3,
-            gamma=(0.7, 1.5),
-        ),
-
-        RandShiftIntensity(
-            offsets=0.10,
-            prob=0.3,
-        ),
-    ])
-
-
-def get_val_transforms():
-    return None
+val_transform = Compose([])
