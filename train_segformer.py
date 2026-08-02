@@ -22,8 +22,8 @@ from models.losses import BCEDiceLoss
 from utils.metrics import (
     dice_score,
     iou_score,
-    precision_score,
-    recall_score,
+    precision,
+    recall,
 )
 
 from utils.train_utils import train_model
@@ -61,7 +61,7 @@ def main():
         pin_memory=PIN_MEMORY,
     )
 
-    print("Building SegFormer...")
+    print(f"Building SegFormer using {DEVICE}")
 
     model = build_segformer().to(DEVICE)
 
@@ -76,8 +76,8 @@ def main():
     metrics = {
         "Dice": dice_score,
         "IoU": iou_score,
-        "Precision": precision_score,
-        "Recall": recall_score,
+        "Precision": precision,
+        "Recall": recall,
     }
 
     train_model(
