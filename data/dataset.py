@@ -62,9 +62,7 @@ class BraTSDataset(Dataset):
 
         return image
 
-    def __getitem__(self, idx):
-
-        patient, slice_idx = self.samples[idx]
+    def _load_slice(self, patient, slice_idx):
 
         flair = nib.load(
             patient / f"{patient.name}_flair.nii"
@@ -86,7 +84,6 @@ class BraTSDataset(Dataset):
             patient / f"{patient.name}_seg.nii"
         ).get_fdata()[:, :, slice_idx]
 
-        # Stack 4 MRI modalities
         image = np.stack(
             [
                 self.normalize(flair),
@@ -109,23 +106,30 @@ class BraTSDataset(Dataset):
             interpolation=cv2.INTER_NEAREST,
         )
 
-        # Binary segmentation
         mask = (mask > 0).astype(np.float32)
 
-        # Convert to tensors
         image = torch.from_numpy(image).permute(2, 0, 1).float()
+
         mask = torch.from_numpy(mask).unsqueeze(0).float()
 
-        # Apply synchronized transforms
         if self.transform:
-            sample = {
-                "image": image,
-                "mask": mask,
-            }
-
-            sample = self.transform(sample)
-
-            image = sample["image"]
-            mask = sample["mask"]
+            image = self.transform(image)
 
         return image, mask
+
+    def get_slice(self, patient, slice_idx):
+
+        return self._load_slice(patient, slice_idx)
+
+    def __getitem__(self, idx):
+
+        patient, slice_idx = self.samples[idx]
+
+        return self._load_slice(patient, slice_idx)
+
+
+    def get_sample_info(self, idx,):
+
+        patient, slice_idx = self.samples[idx]
+
+        return patient.name, slice_idx

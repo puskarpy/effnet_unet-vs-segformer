@@ -187,3 +187,9 @@ Upsample → 224×224
 1×1 Conv
        │
 Sigmoid
+
+
+python predict.py \
+    --model effnet \
+    --patient BraTS20_Training_001 \
+    --slice 75

@@ -100,3 +100,20 @@ SAVE_BEST_ONLY = True
 # ==========================================================
 
 NUM_VISUALIZATIONS = 5
+
+# ==========================================================
+# MODEL CONFIG
+# ==========================================================
+
+MODEL_CONFIG = {
+    "effnet": {
+        "builder": "build_effnet_unet",
+        "checkpoint": "checkpoints/best_effnet_unet.pth",
+        "history": "checkpoints/history_effnet.json",
+    },
+    "segformer": {
+        "builder": "build_segformer",
+        "checkpoint": "checkpoints/best_segformer.pth",
+        "history": "checkpoints/history_segformer.json",
+    },
+}
