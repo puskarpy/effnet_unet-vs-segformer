@@ -123,3 +123,8 @@ BraTS*/
 *.bak
 *.swp
 *.swo
+
+
+# frontend
+
+node_modules/
